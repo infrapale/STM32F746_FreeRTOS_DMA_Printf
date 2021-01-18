@@ -1,0 +1,122 @@
+	
+	  //------------------------------------------------------------------------------------------------
+    HAL_Delay(2000);
+    if (1){
+	/*##-1- Start the transmission process #####################################*/
+	/* User start transmission data through "TxBuffer" buffer */
+	if(HAL_UART_Transmit_DMA(&huart2, (uint8_t*)"AT\r\n", 4)!= HAL_OK)
+	{
+	/* Transfer error in transmission process */
+	Error_Handler();
+	}
+
+	if (HAL_UART_Receive_DMA(&huart2, (uint8_t *)aRxBuffer, 2) != HAL_OK)
+	{
+	/* Transfer error in reception process */
+	//Error_Handler();
+	}
+
+	while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)
+	{
+	}
+	if (HAL_UART_Transmit_DMA(&huart3, (uint8_t *)aRxBuffer, 2) != HAL_OK)
+    //if (HAL_UART_Transmit_DMA(&huart3, (uint8_t *)"x0x\r\n", 5) != HAL_OK)
+		{
+		    /* Transfer error in transmission process */
+			//Error_Handler();
+		}
+
+
+	/*##-4- Send the received Buffer ###########################################*/
+    WAIT_UART_READY(huart3);
+	if (HAL_UART_Transmit_DMA(&huart3, (uint8_t *)aRxBuffer, 2) != HAL_OK)
+	{
+	/* Transfer error in transmission process */
+	//Error_Handler();
+	}
+
+	while (HAL_UART_GetState(&huart3) != HAL_UART_STATE_READY)
+	{
+	}
+
+	//  HAL_UART_Transmit(&huart2, "AT\r\n", 4,HAL_MAX_DELAY);
+
+    }
+
+
+  //------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	if (msg_reserve( (struct msg_handle_struct **) &msg_handle_ptr) == MSG_OK)
+	{
+	   	msg_handle_ptr->bytes = 69;
+
+	}
+    msg_release((struct msg_handle_struct *) msg_handle_ptr);
+
+	/*##-1- Start the transmission process #####################################*/
+	/* User start transmission data through "TxBuffer" buffer */
+	if(HAL_UART_Transmit_DMA(&huart3, (uint8_t*)aTxStartMessage, TXSTARTMESSAGESIZE)!= HAL_OK)
+	{
+	/* Transfer error in transmission process */
+	Error_Handler();
+	}
+
+	/*##-2- Put UART peripheral in reception process ###########################*/
+	/* Any data received will be stored in "aRxBuffer" buffer : the number max of
+	 data received is 10 */
+	if (HAL_UART_Receive_DMA(&huart3, (uint8_t *)aRxBuffer, RXBUFFERSIZE) != HAL_OK)
+	{
+	/* Transfer error in reception process */
+	Error_Handler();
+	}
+
+	/*##-3- Wait for the end of the transfer ###################################*/
+	/*  Before starting a new communication transfer, you need to check the current
+	  state of the peripheral; if it's busy you need to wait for the end of current
+	  transfer before starting a new one.
+	  For simplicity reasons, this example is just waiting till the end of the
+	  transfer, but application may perform other tasks while transfer operation
+	  is ongoing. */
+	while (HAL_UART_GetState(&huart3) != HAL_UART_STATE_READY)
+	{
+	}
+
+	/*##-4- Send the received Buffer ###########################################*/
+	if (HAL_UART_Transmit_DMA(&huart3, (uint8_t *)aRxBuffer, RXBUFFERSIZE) != HAL_OK)
+	{
+	/* Transfer error in transmission process */
+	Error_Handler();
+	}
+
+	/*##-5- Wait for the end of the transfer ###################################*/
+	/*  Before starting a new communication transfer, you need to check the current
+	  state of the peripheral; if it's busy you need to wait for the end of current
+	  transfer before starting a new one.
+	  For simplicity reasons, this example is just waiting till the end of the
+	  transfer, but application may perform other tasks while transfer operation
+	  is ongoing. */
+	while (HAL_UART_GetState(&huart3) != HAL_UART_STATE_READY)
+	{
+	}
+
+	/*##-6- Send the End Message ###############################################*/
+	if(HAL_UART_Transmit_DMA(&huart3, (uint8_t*)aTxEndMessage, TXENDMESSAGESIZE)!= HAL_OK)
+	{
+	/* Transfer error in transmission process */
+	Error_Handler();
+	}
+
+	/*##-7- Wait for the end of the transfer ###################################*/
+	while (HAL_UART_GetState(&huart3) != HAL_UART_STATE_READY)
+	{
+	}
+
+	/* Turn on LED1 if test passes then enter infinite loop */
+	for(uint8_t i = 0;i<10;i++){
+		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+		HAL_Delay(100);
+	}
+
