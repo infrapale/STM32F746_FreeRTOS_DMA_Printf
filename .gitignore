@@ -36,6 +36,12 @@
 *.x86_64
 *.hex
 
+#STM32 CubeIDE
+*.bin
+*.elf
+*.list
+*.map
+
 # Debug files
 *.dSYM/
 *.su
